@@ -1,5 +1,5 @@
 ﻿#include <iostream>
-#include "Header.h"
+#include "allocator_header.h"
 
 
 Allocator::Allocator()
@@ -18,13 +18,13 @@ void Allocator::makeAllocator(size_t maxSize)
 	}
 	if (maxSize <= 0)
 	{
-		throw "makeAllocator problem\n";
+		throw "makeAllocator problem with maxSize: it is non-positive\n";
 	}
 	pointer = new char[maxSize];
 	if (pointer == 0x0)
 	{
 		std::cout << "Insufficient memory" << std::endl;
-		throw "makeAllocator problem\n";
+		throw "makeAllocator problem: allocation with new met some problems\n";
 	}
 	offset = 0;
 	memAllocated = true;

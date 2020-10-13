@@ -1,9 +1,10 @@
 CC=g++
 FLAGS=-std=c++17 -Wall -Pedantic -Wextra -Wno-unused-variable
 
-all: test
+test: program
+	my_prog
 
-test: main.o allocator.o
+program: main.o allocator.o
 	$(CC) main.o allocator.o -o my_prog
 
 allocator.o: allocator.cpp
@@ -13,4 +14,4 @@ main.o: main.cpp
 	$(CC) $(FLAGS) main.cpp -o main.o
 
 clean:
- rm -rf *.o my_prog
+	rm -rf *.o my_prog
