@@ -1,5 +1,8 @@
 #include <iostream>
 
+#ifndef H_ALLOCATOR
+#define H_ALLOCATOR
+
 class Allocator
 {
 private:
@@ -14,3 +17,5 @@ public:
 	void reset();
 	~Allocator();
 };
+
+#endif

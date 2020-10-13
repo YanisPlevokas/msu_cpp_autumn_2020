@@ -1,5 +1,5 @@
 CC=g++
-FLAGS=-std=c++17 -Wall
+FLAGS=-std=c++17 -Wall -Werror -c -ggdb3
 
 all: program
 
@@ -9,7 +9,7 @@ test:
 program: main.o allocator.o
 	$(CC) main.o allocator.o -o program
 
-allocator.o: allocator.cpp allocator_header.hpp
+allocator.o: allocator.cpp
 	$(CC) $(FLAGS) allocator.cpp -o allocator.o
 
 main.o: main.cpp allocator_header.hpp

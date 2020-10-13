@@ -6,7 +6,7 @@ Allocator::Allocator()
 	memAllocated = false;
 	offset = 0;
 	maximumLength = 0;
-	pointer = NULL;
+	pointer = nullptr;
 }
 
 void Allocator::makeAllocator(size_t maxSize)
@@ -14,12 +14,9 @@ void Allocator::makeAllocator(size_t maxSize)
 	if (memAllocated != true) 
 	{
 		pointer = new char[maxSize];
-		if (pointer != NULL)
-		{
-			offset = 0;
-			memAllocated = true;
-			maximumLength = maxSize;
-		}
+		offset = 0;
+		memAllocated = true;
+		maximumLength = maxSize;
 	}
 }
 
@@ -47,6 +44,6 @@ void Allocator::reset()
 
 Allocator::~Allocator()
 {
-	if (pointer != NULL)
+	if (pointer != nullptr)
 		delete pointer;
 }
