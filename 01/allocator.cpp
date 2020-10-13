@@ -1,47 +1,34 @@
 ﻿#include <iostream>
-#include "allocator_header.h"
-
+#include "allocator_header.hpp"
 
 Allocator::Allocator()
 {
 	memAllocated = false;
 	offset = 0;
-	currSize = 0;
+	maximumLength = 0;
 	pointer = NULL;
 }
 
 void Allocator::makeAllocator(size_t maxSize)
 {
-	if (memAllocated == true)
+	if (memAllocated != true) 
 	{
-		throw "already allocated memory";
+		pointer = new char[maxSize];
+		if (pointer != NULL)
+		{
+			offset = 0;
+			memAllocated = true;
+			maximumLength = maxSize;
+		}
 	}
-	if (maxSize <= 0)
-	{
-		throw "makeAllocator problem with maxSize: it is non-positive\n";
-	}
-	pointer = new char[maxSize];
-	if (pointer == 0x0)
-	{
-		std::cout << "Insufficient memory" << std::endl;
-		throw "makeAllocator problem: allocation with new met some problems\n";
-	}
-	offset = 0;
-	memAllocated = true;
-	currSize = maxSize;
 }
 
 char* Allocator::alloc(size_t size)
 {
-	if ((size + offset <= currSize) && (size > 0))
+	if ((size + offset <= maximumLength) && (size != 0))
 	{
 		offset += size;
 		return pointer + offset - size;
-	}
-	else if (size <= 0)
-	{
-		throw "non-positive size allocation";
-		return nullptr;
 	}
 	else
 	{
@@ -51,16 +38,13 @@ char* Allocator::alloc(size_t size)
 
 void Allocator::reset()
 {
-	if (memAllocated == false)
-	{
-		throw "Memory has not been allocated yet";
-	}
-	else
+	if (memAllocated == true)
 	{
 		offset = 0;
 	}
 
 }
+
 Allocator::~Allocator()
 {
 	if (pointer != NULL)
