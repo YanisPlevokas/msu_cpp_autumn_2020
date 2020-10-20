@@ -19,6 +19,10 @@ void function_string(string word)
 
     cout << "hello_string " << word << endl;
 }
+void function_number_2(int number)
+{
+    cout <<"hello_numb_2 * 2 " << number * 2 << endl;
+}
 
 void DefaultWorkTest()
 {
@@ -44,6 +48,16 @@ void NonDeclaredFunction()
     parser.SetDigitTokenCallback(function_number);
     parser.StartParsing("file");
 }
+void ReinstallFunction()
+{
+    TokenParser parser;
+    parser.SetStringTokenCallback(function_string);
+    parser.SetDigitTokenCallback(function_number);
+    parser.SetStartCallback(function_greeting);
+    parser.StartParsing("file");
+    parser.SetDigitTokenCallback(function_number_2);
+    parser.StartParsing("file");
+}
 
 
 
@@ -52,6 +66,7 @@ int main()
     try
     {
         DefaultWorkTest();
+        ReinstallFunction();
         NonDeclaredFunction();
         EmptyFile();
     }
