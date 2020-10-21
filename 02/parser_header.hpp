@@ -1,28 +1,26 @@
+#pragma once
 #include <iostream>
 #include <string>
+#include <functional>
 using namespace std;
-#ifndef H_PARSER
-#define H_PARSER
+
+using callback = function<string()>;
+using digit = function<string (int)>;
+using stringFunc = function<string (const string&)>;
 
 class TokenParser
 {
 private:
-	FILE* filePointer;
-	char c;
-	bool flagFile;
 	bool callbackFlag;
 	bool digitFlag;
 	bool stringFlag;
-	function<void()> function_callback;
-	function<void(int)> function_digit;
-	function<void(string)> function_string;
-	void gc();
+	callback functionCallback;
+	digit functionDigit;
+	stringFunc functionString;
 public:
-	void SetStartCallback(void (*function_callback_new) () );
-	void SetDigitTokenCallback(void (*function_set_digit_new) (int));
-	void SetStringTokenCallback(void (*function_set_string_new) (string));
-	bool StartParsing(const char* program);
-	~TokenParser();
+	TokenParser();
+	void SetStartCallback(const callback &functionCallbackNew);
+	void SetDigitTokenCallback(const digit &functionCallbackNew);
+	void SetStringTokenCallback(const stringFunc &functionSetStringNew);
+	string StartParsing(const string& textName);
 };
-
-#endif

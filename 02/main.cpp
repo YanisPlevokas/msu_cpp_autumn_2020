@@ -4,59 +4,85 @@
 using namespace std;
 
 
-void function_greeting()
+string functionGreeting()
 {
-    cout << "greetings\n";
+    return "greetings ";
 }
 
-void function_number(int number)
+string functionNumber(int number)
 {
-
-    cout << "hello_numb " << number << endl;
+    return to_string(number) + ' ';
 }
-void function_string(string word)
+string functionString(string word)
 {
-
-    cout << "hello_string " << word << endl;
+    return word + ' ';
 }
-void function_number_2(int number)
+string functionNumberSecond(int number)
 {
-    cout <<"hello_numb_2 * 2 " << number * 2 << endl;
+    return to_string(number * 2) + ' ';
 }
 
 void DefaultWorkTest()
 {
     TokenParser parser;
-    parser.SetStringTokenCallback(function_string);
-    parser.SetDigitTokenCallback(function_number);
-    parser.SetStartCallback(function_greeting);
-    parser.StartParsing("file");
+    parser.SetStringTokenCallback(functionString);
+    parser.SetDigitTokenCallback(functionNumber);
+    parser.SetStartCallback(functionGreeting);
+    string testString = "rock \n granj \r uvula \t pasosh 16 10 2020 zakroyte mgu na carantin asd10 10asd";
+    string expectedString = "greetings rock granj uvula pasosh 16 10 2020 zakroyte mgu na carantin asd10 10asd ";
+    if (parser.StartParsing(testString) != expectedString)
+    {
+        throw "DefaultWorkTest problem";
+    }
 }
 
-void EmptyFile()
+void EmptyString()
 {
     TokenParser parser;
-    parser.SetStringTokenCallback(function_string);
-    parser.SetDigitTokenCallback(function_number);
-    parser.SetStartCallback(function_greeting);
-    parser.StartParsing("empty_file");
+    parser.SetStringTokenCallback(functionString);
+    parser.SetDigitTokenCallback(functionNumber);
+    parser.SetStartCallback(functionGreeting);
+    string testString = "";
+    if (parser.StartParsing(testString) != "greetings ")
+    {
+        throw "Empty File problem";
+    }
 }
 void NonDeclaredFunction()
 {
     TokenParser parser;
-    parser.SetStringTokenCallback(function_string);
-    parser.SetDigitTokenCallback(function_number);
-    parser.StartParsing("file");
+    parser.SetStringTokenCallback(functionString);
+    parser.SetDigitTokenCallback(functionNumber);
+    string testString = "rock \n granj \r uvula \t pasosh 16 10 2020 zakroyte mgu na carantin asd10 10asd";
+    if (parser.StartParsing(testString) != "You didn't declare functions. Try again.")
+    {
+        throw "NonDeclaredFunction problem";
+    }
+    parser.SetStartCallback(functionGreeting);
+    string expectedString = "greetings rock granj uvula pasosh 16 10 2020 zakroyte mgu na carantin asd10 10asd ";
+    if (parser.StartParsing(testString) != expectedString)
+    {
+        throw "DefaultWorkTest problem";
+    }
 }
 void ReinstallFunction()
 {
     TokenParser parser;
-    parser.SetStringTokenCallback(function_string);
-    parser.SetDigitTokenCallback(function_number);
-    parser.SetStartCallback(function_greeting);
-    parser.StartParsing("file");
-    parser.SetDigitTokenCallback(function_number_2);
-    parser.StartParsing("file");
+    parser.SetStringTokenCallback(functionString);
+    parser.SetDigitTokenCallback(functionNumber);
+    parser.SetStartCallback(functionGreeting);
+    string testString = "rock \n granj \r uvula \t pasosh 16 10 2020 zakroyte mgu na carantin asd10 10asd";
+    string expectedStringFirst = "greetings rock granj uvula pasosh 16 10 2020 zakroyte mgu na carantin asd10 10asd ";
+    string expectedStringSecond = "greetings rock granj uvula pasosh 32 20 4040 zakroyte mgu na carantin asd10 10asd ";
+    if (parser.StartParsing(testString) != expectedStringFirst)
+    {
+        throw "ReinstallFunction problem";
+    }
+    parser.SetDigitTokenCallback(functionNumberSecond);
+    if (parser.StartParsing(testString) != expectedStringSecond)
+    {
+        throw "ReinstallFunction problem";
+    }
 }
 
 
@@ -65,10 +91,10 @@ int main()
 {
     try
     {
-        DefaultWorkTest();
+        DefaultWorkTest(); 
+        EmptyString();
         ReinstallFunction();
         NonDeclaredFunction();
-        EmptyFile();
     }
     catch (const char* exception)
     {
