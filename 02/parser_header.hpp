@@ -1,7 +1,6 @@
 #pragma once
 #include <iostream>
 #include <string>
-#include <functional>
 using namespace std;
 
 using callback = function<string()>;
