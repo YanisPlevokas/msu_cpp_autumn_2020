@@ -36,11 +36,11 @@ Matrix &Matrix::operator*=(int number)
 Matrix Matrix::operator+(const Matrix& matrix)
 {
     if (matr == nullptr || matrix.matr == nullptr) {
-        throw "At least one of the matrices is not declared\n";
+        throw string("At least one of the matrices is not declared\n");
     }
     else {
         if (rows != matrix.rows || columns != matrix.columns) {
-            throw "Different matrix sizes\n";
+            throw string("Different matrix sizes\n");
         }
         else {
         	Matrix newMatrix = Matrix(rows, columns);

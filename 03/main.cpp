@@ -12,7 +12,7 @@ void DefaultWork()
     assert(m.getColumns() == 3);
 
     m[1][2] = 5; // строка 1, колонка 2
-    cout << m[4][1];
+    cout << m[4][1] << endl;
     m *= 3; // умножение на число
 
     Matrix m1(rows, cols);
@@ -31,7 +31,15 @@ void OutOfBounds()
 
 	cout << m[6][2] << endl;
 }
+void SumDiffMatrices()
+{
+	const size_t rows = 5;
+    const size_t cols = 3;
 
+    Matrix m(rows, cols);
+    Matrix m1(rows + 1, cols);
+    cout << m + m1 << endl;
+}
 
 
 
@@ -57,8 +65,21 @@ int main()
 	{
 		cout << "OutOfBounds problem\n" << endl;
 	}
-	
-
-    
+	try
+	{
+		SumDiffMatrices();
+	}
+	catch(string exception) //Проверка на правильную обработку
+	{
+		if (exception != "Different matrix sizes\n")
+		{
+			cout << "SumDiffMatrices problem\n" << endl;
+		}
+	}
+	catch(...)
+	{
+		cout << "SumDiffMatrices problem\n" << endl;
+	}
+	cout << "Everything is ok\n";    
     return 0;
 }
