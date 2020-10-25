@@ -22,7 +22,6 @@ public:
 
     friend ostream& operator<<(ostream& os, const Matrix& matrix);
 
-
     bool operator==(const Matrix& matrix) const;
 
     bool operator!=(const Matrix& Matrix) const;
