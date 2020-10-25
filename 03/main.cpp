@@ -12,7 +12,7 @@ void DefaultWork()
     assert(m.getColumns() == 3);
 
     m[1][2] = 5; // строка 1, колонка 2
-    cout << m[4][1] << endl;
+    assert(0 == m[4][1]);
     m *= 3; // умножение на число
 
     Matrix m1(rows, cols);
@@ -20,7 +20,7 @@ void DefaultWork()
     if (m1 == m) {
     }
     Matrix m2 = m1 + m;
-    cout << m2 << endl;
+    
 }
 void OutOfBounds()
 {
