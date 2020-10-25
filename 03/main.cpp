@@ -20,7 +20,7 @@ void DefaultWork()
     if (m1 == m) {
     }
     Matrix m2 = m1 + m;
-    
+
 }
 void OutOfBounds()
 {
@@ -40,7 +40,13 @@ void SumDiffMatrices()
     Matrix m1(rows + 1, cols);
     cout << m + m1 << endl;
 }
+void InitNegativeSizeMatrix()
+{
+	int rows = -5;
+    int cols = 3;
 
+    Matrix m(rows, cols);
+}
 
 
 int main()
@@ -79,6 +85,17 @@ int main()
 	catch(...)
 	{
 		cout << "SumDiffMatrices problem\n" << endl;
+	}
+	try
+	{
+		InitNegativeSizeMatrix();
+	}
+	catch(string exception)
+	{
+		if (exception != "Non-positive matrix declaration\n")
+		{
+			cout << "InitNegativeSizeMatrix problem\n";
+		}
 	}
 	cout << "Everything is ok\n";    
     return 0;

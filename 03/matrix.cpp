@@ -11,7 +11,7 @@ Matrix::Matrix()
 Matrix::Matrix(int rowsNew, int columnsNew)
 {
     if ((rowsNew <= 0) || (columnsNew <= 0)) {
-        throw "Non-positive matrix declaration\n";
+        throw string("Non-positive matrix declaration\n");
         matr = nullptr;
     }
     else {
