@@ -88,6 +88,9 @@ int main()
             cout << "InitNegativeSizeMatrix problem\n";
         }
     }
+    catch (...) {
+    	cout << "InitNegativeSizeMatrix problem\n";
+    }
     cout << "Everything is ok\n";
     return 0;
 }
