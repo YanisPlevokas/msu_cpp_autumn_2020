@@ -1,5 +1,5 @@
 #pragma once
-#include <iostream>
+#include < iostream >
 using namespace std;
 
 class Matrix {
@@ -16,19 +16,20 @@ public:
 
     Matrix(int rowsNew, int columnsNew);
 
-    Matrix &operator*=(int number);
+    Matrix& operator*=(int number);
 
-    Matrix operator+(const Matrix& matrix);
+    Matrix operator+(const Matrix& matrix) const;
 
-    friend ostream& operator<<(ostream& os, const Matrix& matrix);
+    friend ostream& operator<<(ostream& os,
+        const Matrix& matrix);
 
     bool operator==(const Matrix& matrix) const;
 
     bool operator!=(const Matrix& Matrix) const;
 
-    int getRows();
+    int getRows() const;
 
-    int getColumns();
+    int getColumns() const;
 
     ~Matrix();
 
@@ -39,9 +40,9 @@ public:
 
         ~Rows();
 
-        const int &operator[](int col) const;
+        const int& operator[](int col) const;
 
-        int &operator[](int col);
+        int& operator[](int col);
 
         int* rowPtr;
 

@@ -15,25 +15,24 @@ Matrix::Matrix(int rowsNew, int columnsNew)
         matr = nullptr;
     }
     else {
-    	rows = rowsNew;
-    	columns = columnsNew;
+        rows = rowsNew;
+        columns = columnsNew;
         matr = new int*[rowsNew];
         for (int i = 0; i < rowsNew; i++) {
             matr[i] = new int[columnsNew];
         }
     }
 }
-Matrix &Matrix::operator*=(int number) 
+Matrix& Matrix::operator*=(int number)
 {
     for (int i = 0; i < rows; i++) {
-        for (int j = 0; j < rows; j++) 
-        {
+        for (int j = 0; j < rows; j++) {
             matr[i][j] *= number;
         }
     }
     return *this;
 }
-Matrix Matrix::operator+(const Matrix& matrix)
+Matrix Matrix::operator+(const Matrix& matrix) const
 {
     if (matr == nullptr || matrix.matr == nullptr) {
         throw string("At least one of the matrices is not declared\n");
@@ -42,15 +41,13 @@ Matrix Matrix::operator+(const Matrix& matrix)
         if (rows != matrix.rows || columns != matrix.columns) {
             throw string("Different matrix sizes\n");
         }
-        else {
-        	Matrix newMatrix = Matrix(rows, columns);
-            for (int i = 0; i < rows; i++) {
-                for (int j = 0; j < columns; j++) {
-                    newMatrix[i][j] = matrix[i][j] + matr[i][j];
-                }
+        Matrix newMatrix = Matrix(rows, columns);
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
+                newMatrix[i][j] = matrix[i][j] + matr[i][j];
             }
-            return newMatrix;
         }
+        return newMatrix;
     }
 }
 
@@ -59,12 +56,10 @@ bool Matrix::operator==(const Matrix& matrix) const
     if (matrix.rows != rows || matrix.columns != columns) {
         return false;
     }
-    else {
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < columns; j++) {
-                if (matrix[i][j] != matr[i][j])
-                    return false;
-            }
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < columns; j++) {
+            if (matrix[i][j] != matr[i][j])
+                return false;
         }
     }
     return true;
@@ -75,11 +70,11 @@ bool Matrix::operator!=(const Matrix& matrix) const
     return !(*this == matrix);
 }
 
-int Matrix::getRows()
+int Matrix::getRows() const
 {
     return rows;
 }
-int Matrix::getColumns()
+int Matrix::getColumns() const
 {
     return columns;
 }
@@ -115,7 +110,8 @@ Matrix::Rows::Rows(int* row, int len)
     length = len;
 }
 
-ostream& operator<<(ostream& os, const Matrix& matrix)
+ostream& operator<<(ostream& os,
+    const Matrix& matrix)
 {
     for (int i = 0; i < matrix.rows; i++) {
         for (int j = 0; j < matrix.columns; j++) {
@@ -133,7 +129,7 @@ int& Matrix::Rows::operator[](int col)
     if (col >= length) {
         throw std::out_of_range("");
     }
-    int &res = rowPtr[col];
+    int& res = rowPtr[col];
     return res;
 }
 
