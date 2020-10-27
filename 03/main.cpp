@@ -22,8 +22,6 @@ void DefaultWork()
     Matrix m3(rows, cols);
     m3[1][2] = 20; //Вручную выставляем 20 в позицию [1][2], чтобы в дальнейшем проверить, действительно ли в m2 произошло сложение
     if (m3 != m2) {
-        cout << m3 << endl;
-        cout << m2 << endl;
         throw string("Wrong add operation\n");
     }
 }
@@ -33,7 +31,6 @@ void OutOfBounds()
     const size_t cols = 3;
 
     Matrix m(rows, cols);
-    cout << m[rows + 2][cols] << endl;
 }
 void SumDiffMatrices()
 {
@@ -42,7 +39,6 @@ void SumDiffMatrices()
 
     Matrix m(rows, cols);
     Matrix m1(rows + 1, cols);
-    cout << m + m1 << endl;
 }
 void InitNegativeSizeMatrix()
 {
