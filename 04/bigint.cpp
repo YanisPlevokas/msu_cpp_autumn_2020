@@ -264,7 +264,6 @@ BigInt BigInt::operator+(const BigInt& value) const
 BigInt BigInt::operator*(const BigInt& value) const
 {
     BigInt result(new char[value.size + size], value.size + size, (value.negFlag ^ negFlag));
-    cout << "here man\n";
     int j;
     for (int i = 0; i < result.size; i++)
     {
@@ -401,6 +400,7 @@ BigInt BigInt::operator-(const BigInt& value) const
 
 std::ostream& operator<<(std::ostream& out, const BigInt& value)
 {
+    int firstZeroFlag = 0;
     if (value.zeroFlag) {
         out << "0";
         return out;
@@ -409,8 +409,12 @@ std::ostream& operator<<(std::ostream& out, const BigInt& value)
         out << '-';
     }
     for (int i = value.size - 1; i >= 0; i--) {
-
-        out << int(value.mas[i]);
+        if ( (int(value.mas[i]) == 0) && (!firstZeroFlag))
+        {
+            firstZeroFlag = 1;
+        }
+        else
+            out << int(value.mas[i]);
     }
     return out;
 }
