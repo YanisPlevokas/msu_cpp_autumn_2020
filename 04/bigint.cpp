@@ -1,7 +1,6 @@
 #include <iostream>
 using namespace std;
 #include "bigint.hpp"
-#include <math.h>
 
 BigInt::BigInt()
 {
@@ -14,20 +13,24 @@ BigInt::BigInt()
 BigInt::BigInt(long long x)
 {
     negFlag = false;
-    if (x < 0) {
+    if (x < 0)
+    {
         x = -x;
         negFlag = true;
     }
     zeroFlag = false;
-    if (x == 0) {
+    if (x == 0)
+    {
         mas = new char[1]();
         size = 1;
         zeroFlag = true;
     }
-    else {
+    else
+    {
         size = 0;
         mas = new char[20]();
-        while (x > 0) {
+        while (x > 0)
+        {
             mas[size] = x % 10;
             size++;
             x = x / 10;
@@ -84,7 +87,8 @@ BigInt::BigInt(const BigInt& value)
 
 BigInt& BigInt::operator=(const BigInt& value)
 {
-    if (value == *this) {
+    if (value == *this)
+    {
         return *this;
     }
     char* tmp = new char[value.size];
@@ -110,7 +114,8 @@ BigInt::BigInt(BigInt&& value)
 
 BigInt& BigInt::operator=(BigInt&& value)
 {
-    if (*this == value) {
+    if (*this == value)
+    {
         return *this;
     }
     delete[] mas;
@@ -127,22 +132,27 @@ BigInt BigInt::operator-() const
 {
     BigInt tmp(*this);
     tmp.negFlag = !tmp.negFlag;
-    return tmp;     
+    return tmp;
 }
 
 bool BigInt::operator==(const BigInt& value) const
 {
-    if (size != value.size) {
+    if (size != value.size)
+    {
         return false;
     }
-    if (zeroFlag && value.zeroFlag) {
+    if (zeroFlag && value.zeroFlag)
+    {
         return true;
     }
-    if (negFlag != value.negFlag) {
+    if (negFlag != value.negFlag)
+    {
         return false;
     }
-    for (int i = size - 1; i >= 0; i--) {
-        if (mas[i] != value.mas[i]) {
+    for (int i = size - 1; i >= 0; i--)
+    {
+        if (mas[i] != value.mas[i])
+        {
             return false;
         }
     }
@@ -156,44 +166,59 @@ bool BigInt::operator!=(const BigInt& value) const
 
 bool BigInt::operator<=(const BigInt& value) const
 {
-    if (value == *this) {
+    if (value == *this)
+    {
         return true;
     }
-    if (value.negFlag && !negFlag) {
+    if (value.negFlag && !negFlag)
+    {
         return false;
     }
-    if (!value.negFlag && negFlag) {
+    if (!value.negFlag && negFlag)
+    {
         return true;
     }
-    if (!value.negFlag && !negFlag) {
-        if (value.size > size) {
+    if (!value.negFlag && !negFlag)
+    {
+        if (value.size > size)
+        {
             return true;
         }
-        if (value.size < size) {
+        if (value.size < size)
+        {
             return false;
         }
-        for (int i = size - 1; i >= 0; i--) {
-            if (mas[i] > value.mas[i]) {
+        for (int i = size - 1; i >= 0; i--)
+        {
+            if (mas[i] > value.mas[i])
+            {
                 return false;
             }
-            else if (mas[i] < value.mas[i]) {
+            else if (mas[i] < value.mas[i])
+            {
                 return true;
             }
         }
         return true;
     }
-    else if (value.negFlag && negFlag) {
-        if (value.size > size) {
+    else if (value.negFlag && negFlag)
+    {
+        if (value.size > size)
+        {
             return false;
         }
-        if (value.size < size) {
+        if (value.size < size)
+        {
             return true;
         }
-        for (int i = size - 1; i >= 0; i--) {
-            if (mas[i] > value.mas[i]) {
+        for (int i = size - 1; i >= 0; i--)
+        {
+            if (mas[i] > value.mas[i])
+            {
                 return true;
             }
-            else if (mas[i] < value.mas[i]) {
+            else if (mas[i] < value.mas[i])
+            {
                 return false;
             }
         }
@@ -219,43 +244,52 @@ bool BigInt::operator<(const BigInt& value) const
 
 BigInt BigInt::operator+(const BigInt& value) const
 {
-    if (!negFlag && value.negFlag) {
+    if (!negFlag && value.negFlag)
+    {
         auto tmp = -value;
         return (*this).operator-(tmp);
     }
-    if (negFlag && !value.negFlag) {
+    if (negFlag && !value.negFlag)
+    {
         auto tmp = -(*this);
         return value.operator-(tmp);
     }
     int max_size = 0;
     int min_size = 0;
-    if (size >= value.size) {
+    if (size >= value.size)
+    {
         max_size = size;
         min_size = value.size;
     }
-    else {
+    else
+    {
         max_size = value.size;
         min_size = size;
     }
     char carry = 0;
     char* res = new char[max_size + 1]();
     int i = 0;
-    for (; i < min_size; i++) {
+    for (; i < min_size; i++)
+    {
         res[i] = (mas[i] + value.mas[i] + carry) % 10;
         carry = (mas[i] + value.mas[i] + carry) / 10;
     }
-    for (; i < max_size; i++) {
-        if (max_size == size) {
+    for (; i < max_size; i++)
+    {
+        if (max_size == size)
+        {
             res[i] = (mas[i] + carry) % 10;
             carry = (mas[i] + carry) / 10;
         }
-        else {
+        else
+        {
             res[i] = (value.mas[i] + carry) % 10;
             carry = (value.mas[i] + carry) / 10;
         }
     }
     int res_size = max_size;
-    if (carry > 0) {
+    if (carry > 0)
+    {
         res[i] = carry;
         res_size++;
     }
@@ -290,107 +324,132 @@ BigInt BigInt::operator*(const BigInt& value) const
 }
 BigInt BigInt::operator-(const BigInt& value) const
 {
-    if (!negFlag && value.negFlag) {
+    if (!negFlag && value.negFlag)
+    {
         auto tmp = -value;
         return (*this).operator+(tmp);
     }
-    if (negFlag && !value.negFlag) {
+    if (negFlag && !value.negFlag)
+    {
         auto tmp = -(*this);
         return -(value.operator+(tmp));
     }
-    if (negFlag && value.negFlag) {
+    if (negFlag && value.negFlag)
+    {
         auto tmp1 = -(*this);
         auto tmp2 = -value;
         return -(tmp1 - tmp2);
     }
-    if (size > value.size) {
+    if (size > value.size)
+    {
         char* res = new char[size]();
         int carry = 0;
         int i = 0;
-        for (; i < value.size; i++) {
+        for (; i < value.size; i++)
+        {
             res[i] = mas[i] - carry - value.mas[i];
             carry = 0;
-            if (res[i] < 0) {
+            if (res[i] < 0)
+            {
                 res[i] += 10;
                 carry = 1;
             }
         }
-        for (; i < size; i++) {
+        for (; i < size; i++)
+        {
             res[i] = mas[i] - carry;
             carry = 0;
-            if (res[i] < 0) {
+            if (res[i] < 0)
+            {
                 res[i] += 10;
                 carry = 1;
             }
         }
         i--;
-        while (res[i] == 0) {
+        while (res[i] == 0)
+        {
             i--;
         }
         return BigInt(res, i + 1, false);
     }
-    else if (value.size > size) {
+    else if (value.size > size)
+    {
         char* res = new char[value.size]();
         int carry = 0;
         int i = 0;
-        for (; i < size; i++) {
+        for (; i < size; i++)
+        {
             res[i] = value.mas[i] - carry - mas[i];
             carry = 0;
-            if (res[i] < 0) {
+            if (res[i] < 0)
+            {
                 res[i] += 10;
                 carry = 1;
             }
         }
-        for (; i < value.size; i++) {
+        for (; i < value.size; i++)
+        {
             res[i] = value.mas[i] - carry;
             carry = 0;
-            if (res[i] < 0) {
+            if (res[i] < 0)
+            {
                 res[i] += 10;
                 carry = 1;
             }
         }
         i--;
-        while (res[i] == 0) {
+        while (res[i] == 0)
+        {
             i--;
         }
         return BigInt(res, i + 1, true);
     }
-    else {
-        if (*this == value) {
+    else
+    {
+        if (*this == value)
+        {
             return BigInt(0);
         }
-        if (*this > value) {
+        if (*this > value)
+        {
             char* res = new char[size]();
             int carry = 0;
             int i = 0;
-            for (; i < size; i++) {
+            for (; i < size; i++)
+            {
                 res[i] = mas[i] - carry - value.mas[i];
                 carry = 0;
-                if (res[i] < 0) {
+                if (res[i] < 0)
+                {
                     res[i] += 10;
                     carry = 1;
                 }
             }
             i--;
-            while (res[i] == 0) {
+            while (res[i] == 0)
+            {
                 i--;
             }
             return BigInt(res, i + 1, false);
         }
-        else {
+        else
+        {
             char* res = new char[size]();
             int carry = 0;
             int i = 0;
-            for (; i < size; i++) {
+            for (; i < size; i++)
+            {
                 res[i] = value.mas[i] - carry - mas[i];
                 carry = 0;
-                if (res[i] < 0) {
+                if (res[i] < 0)
+                {
                     res[i] += 10;
                     carry = 1;
                 }
             }
             i--;
-            while (res[i] == 0) {
+            while (res[i] == 0)
+            {
                 i--;
             }
             return BigInt(res, i + 1, true);
@@ -401,15 +460,18 @@ BigInt BigInt::operator-(const BigInt& value) const
 std::ostream& operator<<(std::ostream& out, const BigInt& value)
 {
     int firstZeroFlag = 0;
-    if (value.zeroFlag) {
+    if (value.zeroFlag)
+    {
         out << "0";
         return out;
     }
-    if (value.negFlag) {
+    if (value.negFlag)
+    {
         out << '-';
     }
-    for (int i = value.size - 1; i >= 0; i--) {
-        if ( (int(value.mas[i]) == 0) && (!firstZeroFlag))
+    for (int i = value.size - 1; i >= 0; i--)
+    {
+        if ((int(value.mas[i]) == 0) && (!firstZeroFlag))
         {
             firstZeroFlag = 1;
         }
