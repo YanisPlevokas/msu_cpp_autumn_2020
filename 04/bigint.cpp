@@ -2,13 +2,7 @@
 using namespace std;
 #include "bigint.hpp"
 
-BigInt::BigInt()
-{
-    size = 1;
-    negFlag = false;
-    zeroFlag = true;
-    mas = new char[1]();
-}
+BigInt::BigInt(): mas(new char[1]), size(1), negFlag(false), zeroFlag(true) {}
 
 BigInt::BigInt(long long x)
 {
@@ -37,51 +31,37 @@ BigInt::BigInt(long long x)
         }
     }
 }
-BigInt::BigInt(string numb)
+BigInt::BigInt(const string &numb)
 {
     negFlag = false;
-    int localSdvig = 0;
+    int localOffset = 0;
     if (numb[0] == '-')
     {
         negFlag = true;
-        localSdvig = 1;
+        localOffset = 1;
     }
-    zeroFlag = false;
-    if (numb[0] == 0)
+    zeroFlag = true;
+    mas = new char[numb.length() - localOffset];
+    size = numb.length() - localOffset;
+    for (int i = 0; i < numb.length() - localOffset; i++)
     {
-        mas = new char[1]();
-        size = 1;
-        zeroFlag = true;
-    }
-    else
-    {
-        mas = new char[numb.length() - localSdvig];
-        size = numb.length() - localSdvig;
-        for (int i = 0; i < numb.length() - localSdvig; i++)
+        mas[i] = numb[numb.length() - i - 1] - '0';
+        if (int(mas[i]) != 0)
         {
-            mas[i] = numb[numb.length() - i - 1] - '0';
+            zeroFlag = false;
         }
     }
 }
-BigInt::BigInt(char* m, size_t s, bool isn)
-{
-    mas = m;
-    size = s;
-    negFlag = isn;
-    zeroFlag = ((size == 1) && (mas[0] == 0));
-}
+BigInt::BigInt(char* m, size_t s, bool isn) : mas(m), size(s), negFlag(isn), zeroFlag(((size == 1) && (mas[0] == 0))) {}
 
 BigInt::~BigInt()
 {
     delete[] mas;
 }
 
-BigInt::BigInt(const BigInt& value)
+BigInt::BigInt(const BigInt& value): size(value.size), negFlag(value.negFlag), zeroFlag(value.zeroFlag)
 {
     mas = new char[value.size];
-    negFlag = value.negFlag;
-    size = value.size;
-    zeroFlag = value.zeroFlag;
     copy(value.mas, value.mas + size, mas);
 }
 
@@ -101,11 +81,8 @@ BigInt& BigInt::operator=(const BigInt& value)
     return *this;
 }
 
-BigInt::BigInt(BigInt&& value)
+BigInt::BigInt(BigInt&& value) : size(value.size), negFlag(value.negFlag), zeroFlag(value.zeroFlag)
 {
-    size = value.size;
-    negFlag = value.negFlag;
-    zeroFlag = value.zeroFlag;
     delete[] mas;
     mas = value.mas;
     value.mas = nullptr;
@@ -254,18 +231,8 @@ BigInt BigInt::operator+(const BigInt& value) const
         auto tmp = -(*this);
         return value.operator-(tmp);
     }
-    int max_size = 0;
-    int min_size = 0;
-    if (size >= value.size)
-    {
-        max_size = size;
-        min_size = value.size;
-    }
-    else
-    {
-        max_size = value.size;
-        min_size = size;
-    }
+    int max_size = max(size, value.size);
+    int min_size = min(size, value.size);
     char carry = 0;
     char* res = new char[max_size + 1]();
     int i = 0;
@@ -459,7 +426,7 @@ BigInt BigInt::operator-(const BigInt& value) const
 
 std::ostream& operator<<(std::ostream& out, const BigInt& value)
 {
-    int firstZeroFlag = 0;
+    int flag = 0;
     if (value.zeroFlag)
     {
         out << "0";
@@ -471,12 +438,18 @@ std::ostream& operator<<(std::ostream& out, const BigInt& value)
     }
     for (int i = value.size - 1; i >= 0; i--)
     {
-        if ((int(value.mas[i]) == 0) && (!firstZeroFlag))
+        if ((int(value.mas[i]) != 0))
         {
-            firstZeroFlag = 1;
+            flag = 1;
         }
-        else
+        if (flag)
+        {
             out << int(value.mas[i]);
+        }
+    }
+    if (flag == 0)
+    {
+        out << "0";
     }
     return out;
 }

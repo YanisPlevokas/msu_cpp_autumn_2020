@@ -14,7 +14,7 @@ public:
     BigInt(long long x);
     BigInt();
     BigInt(const BigInt& value);
-    BigInt(string numb);
+    BigInt(const string& numb);
     BigInt(BigInt&& value);
     BigInt& operator=(const BigInt& value);
     BigInt& operator=(BigInt&& value);
