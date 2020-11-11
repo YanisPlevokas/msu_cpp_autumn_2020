@@ -1,12 +1,20 @@
 #include <iostream>
 #include "serializator.hpp"
-#include <sstream>   
+#include <sstream>
 
-#define checkEqual(x, y) do { if ((x) != (y)) { std::cout << "at line " << __LINE__ << ": " << (x) << " != " << (y) << '\n'; }; } while(0)
-#define checkTrue(cond) do { if (!(cond)) std::cout << "at line " << __LINE__ << ": " << #cond << '\n'; } while(0)
+#define checkEqual(x, y)                                                                 \
+    do {                                                                                 \
+        if ((x) != (y)) {                                                                \
+            std::cout << "at line " << __LINE__ << ": " << (x) << " != " << (y) << '\n'; \
+        };                                                                               \
+    } while (0)
+#define checkTrue(cond)                                                   \
+    do {                                                                  \
+        if (!(cond))                                                      \
+            std::cout << "at line " << __LINE__ << ": " << #cond << '\n'; \
+    } while (0)
 
-struct Data
-{
+struct Data {
     uint64_t a;
     bool b;
     uint64_t c;
@@ -23,11 +31,9 @@ struct Data
     }
 };
 
-
-
 void FirstTest()
 {
-    Data x { 1, true, 2 };
+    Data x{ 1, true, 2 };
     std::stringstream s1;
     Serializer serializer(s1);
     checkTrue(serializer.save(x) == Error::NoError);
@@ -35,7 +41,7 @@ void FirstTest()
 
 void SecondTest()
 {
-    Data y { 0, false, 0 };
+    Data y{ 0, false, 0 };
     std::stringstream s1;
     Serializer serializer(s1);
     Deserializer d1(s1);
@@ -44,13 +50,13 @@ void SecondTest()
 
 void ThirdTest()
 {
-    Data x { 1, true, 2 };
+    Data x{ 1, true, 2 };
 
     std::stringstream s1;
 
     Serializer serializer(s1);
 
-    Data y { 0, false, 0 };
+    Data y{ 0, false, 0 };
 
     Deserializer d1(s1);
     checkEqual(x.a, y.a);
@@ -60,7 +66,7 @@ void ThirdTest()
 
 void FourthTest()
 {
-    Data y { 0, false, 0 };
+    Data y{ 0, false, 0 };
     auto s2 = std::stringstream("");
     Deserializer d2(s2);
     checkTrue(d2.load(y) == Error::CorruptedArchive);
@@ -76,11 +82,10 @@ void FourthTest()
     auto s5 = std::stringstream("false 1");
     Deserializer d5(s5);
     checkTrue(d5.load(y) == Error::CorruptedArchive);
-
 }
 void FifthTest()
 {
-    Data y { 0, true, 0 };
+    Data y{ 0, true, 0 };
 
     auto s6 = std::stringstream("100 false 500");
     Deserializer d6(s6);
@@ -91,20 +96,16 @@ void FifthTest()
     checkEqual(y.c, 500);
 }
 
-
-
 int main()
-{   
-    try
-    {
+{
+    try {
         FifthTest();
         SecondTest();
         ThirdTest();
         FourthTest();
         FifthTest();
     }
-    catch(...)
-    {
+    catch (...) {
         std::cout << "Everything is awful\n";
     }
     std::cout << "Everything is not so bad\n";
