@@ -1,19 +1,6 @@
 #include <iostream>
 #include "serializator.hpp"
 #include <sstream>
-
-#define checkEqual(x, y)                                                                 \
-    do {                                                                                 \
-        if ((x) != (y)) {                                                                \
-            std::cout << "at line " << __LINE__ << ": " << (x) << " != " << (y) << '\n'; \
-        };                                                                               \
-    } while (0)
-#define checkTrue(cond)                                                   \
-    do {                                                                  \
-        if (!(cond))                                                      \
-            std::cout << "at line " << __LINE__ << ": " << #cond << '\n'; \
-    } while (0)
-
 struct Data {
     uint64_t a;
     bool b;
@@ -31,79 +18,85 @@ struct Data {
     }
 };
 
-void FirstTest()
-{
-    Data x{ 1, true, 2 };
-    std::stringstream s1;
-    Serializer serializer(s1);
-    checkTrue(serializer.save(x) == Error::NoError);
-}
+struct Data1 {
+    int a;
+    bool b;
+    std::string c;
 
-void SecondTest()
+    template <class Serializer>
+    Error serialize(Serializer& serializer)
+    {
+        return serializer(a, b, c);
+    }
+    template <class Deserializer>
+    Error deserialize(Deserializer& deserializer)
+    {
+        return deserializer(a, b, c);
+    }
+};
+
+struct Data2 {
+    uint64_t a;
+    bool b;
+
+    template <class Serializer>
+    Error serialize(Serializer& serializer)
+    {
+        return serializer(a, b);
+    }
+    template <class Deserializer>
+    Error deserialize(Deserializer& deserializer)
+    {
+        return deserializer(a, b);
+    }
+};
+
+void defaultWork()
 {
+    Data x{ 2, true, 5 };
     Data y{ 0, false, 0 };
     std::stringstream s1;
     Serializer serializer(s1);
-    Deserializer d1(s1);
-    checkTrue(d1.load(y) == Error::NoError);
+    serializer.save(x);
+    Deserializer deserializer(s1);
+    const Error err = deserializer.load(y);
+    assert(err == Error::NoError);
+    assert(x.a == y.a);
+    assert(x.b == y.b);
+    assert(x.c == y.c);
 }
 
-void ThirdTest()
+void Uint64Test()
 {
-    Data x{ 1, true, 2 };
-
-    std::stringstream s1;
-
-    Serializer serializer(s1);
-
-    Data y{ 0, false, 0 };
-
-    Deserializer d1(s1);
-    checkEqual(x.a, y.a);
-    checkEqual(x.b, y.b);
-    checkEqual(x.c, y.c);
+    Data1 x{ -32, true, "23" };
+    Data1 y{ 1, true, "23" };
+    std::stringstream s2;
+    Serializer serializer(s2);
+    const Error err = serializer.save(x);
+    assert(err == Error::CorruptedArchive);
+    const Error err_2 = serializer.save(x);
+    assert(err_2 == Error::CorruptedArchive);
 }
 
-void FourthTest()
+void DeserializerTest()
 {
-    Data y{ 0, false, 0 };
-    auto s2 = std::stringstream("");
-    Deserializer d2(s2);
-    checkTrue(d2.load(y) == Error::CorruptedArchive);
-
-    auto s3 = std::stringstream("1 2 3");
-    Deserializer d3(s3);
-    checkTrue(d3.load(y) == Error::CorruptedArchive);
-
-    auto s4 = std::stringstream("1 true -3");
-    Deserializer d4(s4);
-    checkTrue(d4.load(y) == Error::CorruptedArchive);
-
-    auto s5 = std::stringstream("false 1");
-    Deserializer d5(s5);
-    checkTrue(d5.load(y) == Error::CorruptedArchive);
-}
-void FifthTest()
-{
+    Data2 x{ 1, false };
     Data y{ 0, true, 0 };
-
-    auto s6 = std::stringstream("100 false 500");
-    Deserializer d6(s6);
-    checkTrue(d6.load(y) == Error::NoError);
-
-    checkEqual(y.a, 100);
-    checkEqual(y.b, false);
-    checkEqual(y.c, 500);
+    std::stringstream s3;
+    Serializer serializer(s3);
+    serializer.save(x);
+    s3 << ' ' << "here now";
+    Deserializer deserializer(s3);
+    const Error err = deserializer.load(y);
+    assert(err == Error::CorruptedArchive); // unable
 }
 
 int main()
 {
     try {
-        FifthTest();
-        SecondTest();
-        ThirdTest();
-        FourthTest();
-        FifthTest();
+        defaultWork();
+        Uint64Test();
+        DeserializerTest();
     }
     catch (...) {
         std::cout << "Everything is awful\n";

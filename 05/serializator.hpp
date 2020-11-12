@@ -33,13 +33,23 @@ private:
     template <class T, class... ArgsT>
     Error process(T&& object, ArgsT&&... args)
     {
-        handler(object);
+        try {
+            handler(object);
+        }
+        catch (const Error& exception) {
+            return exception;
+        }
         return process(std::forward<ArgsT>(args)...);
     }
     template <class T>
     Error process(T&& object)
     {
-        handler(object);
+        try {
+            handler(object);
+        }
+        catch (const Error& exception) {
+            return exception;
+        }
         return Error::NoError;
     }
     void handler(bool obj)
@@ -49,6 +59,11 @@ private:
     void handler(uint64_t obj)
     {
         out_ << obj << Separator;
+    }
+    template <class T>
+    void handler(T)
+    {
+        throw Error::CorruptedArchive;
     }
 };
 
@@ -67,8 +82,8 @@ public:
         return object.deserialize(*this);
     }
 
-    template <class T, class... ArgsT>
-    Error operator()(T&& object, ArgsT&&... args)
+    template <class... ArgsT>
+    Error operator()(ArgsT&&... args)
     {
         return process(std::forward<ArgsT>(args)...);
     }
@@ -79,9 +94,11 @@ private:
     template <class T, class... ArgsT>
     Error process(T&& object, ArgsT&&... args)
     {
-        auto res = funct(object);
-        if (res == Error::CorruptedArchive) {
-            return Error::CorruptedArchive;
+        try {
+            funct(object);
+        }
+        catch (const Error& exception) {
+            return exception;
         }
         return process(std::forward<ArgsT>(args)...);
     }
@@ -89,10 +106,16 @@ private:
     template <class T>
     Error process(T&& object)
     {
-        return funct(object);
+        try {
+            funct(object);
+        }
+        catch (const Error& err) {
+            return err;
+        }
+        return Error::NoError;
     }
 
-    Error funct(bool& value)
+    void funct(bool& value)
     {
         std::string text;
         in_ >> text;
@@ -101,24 +124,26 @@ private:
         else if (text == "false")
             value = false;
         else
-            return Error::CorruptedArchive;
-
-        return Error::NoError;
+            throw Error::CorruptedArchive;
     }
 
-    Error funct(uint64_t& a)
+    void funct(uint64_t& value)
     {
         std::string text;
         in_ >> text;
+        if (!isdigit(text[0])) {
+            throw Error::CorruptedArchive;
+        }
         try {
-            if (!isdigit(text[0])) {
-                return Error::CorruptedArchive;
-            }
-            a = std::stoull(text);
-            return Error::NoError;
+            value = stoull(text);
         }
-        catch (const std::exception& e) {
-            return Error::CorruptedArchive;
+        catch (const std::logic_error& exception) {
+            throw Error::CorruptedArchive;
         }
+    }
+    template <class T>
+    void funct(T)
+    {
+        throw Error::CorruptedArchive;
     }
 };
