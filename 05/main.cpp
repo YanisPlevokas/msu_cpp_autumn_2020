@@ -1,6 +1,7 @@
 #include <iostream>
 #include "serializator.hpp"
 #include <sstream>
+
 struct Data {
     uint64_t a;
     bool b;
