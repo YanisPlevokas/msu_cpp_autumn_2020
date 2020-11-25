@@ -204,7 +204,6 @@ private:
     T* my_pointer;
     Allocator alloc;
 public:
-
 	Vector(): max_size(0), vec_size(0), my_pointer(nullptr), alloc() {}
 
     Vector(const size_t new_size): max_size(new_size), vec_size(new_size), alloc()
@@ -363,18 +362,15 @@ public:
 
     void resize(size_t new_size)
     {
-        if (new_size < vec_size)
+    	if (new_size > max_size)
         {
-            deleter(new_size);
-            vec_size = new_size;
+			max_size = new_size * 2 + 1;
+            reallocate();
         }
-        else
+        else if (new_size < vec_size)
         {
-            if (new_size > max_size)
-            {
-                max_size = new_size * 2 + 1;
-                reallocate();
-            }
+        	deleter(new_size);
+            vec_size = new_size;
         }
     }
 
