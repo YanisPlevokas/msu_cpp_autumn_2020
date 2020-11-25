@@ -59,9 +59,17 @@ void test_3() //iter_check
 
 int main()
 {
-    test_1();
-    test_2();
-    test_3();
-    cout << "Success!" << endl;
+	try
+	{
+		test_1();
+	    test_2();
+	    test_3();
+	}
+	catch (...)
+	{
+		cout << "Kinda problem\n";
+		exit(-1);
+	}
+	cout << "Everything is ok\n";
     return 0;
 }
