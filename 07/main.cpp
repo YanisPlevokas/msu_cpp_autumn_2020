@@ -97,6 +97,10 @@ int main()
 	    test_4();
 	    test_5();
 	}
+	catch (runtime_error& e)
+	{
+		cout << "runtime_error\n";
+	}
 	catch (...)
 	{
 		cout << "Kinda problem\n";

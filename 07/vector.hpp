@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <limits>
+#include <stdexcept>
 using namespace std;
 
 template <class T>
@@ -114,6 +115,41 @@ public:
         return tmp;
     }
 
+    Iterator<T>& operator+=(int value)
+    {
+    	if (!(reverse_flag))
+        	my_pointer += value;
+        else
+        	my_pointer -= value;
+        return *this;
+    }
+
+    Iterator<T>& operator-=(int value)
+    {
+        if (!(reverse_flag))
+        	my_pointer -= value;
+        else
+        	my_pointer += value;
+        return *this;
+    }
+
+    Iterator<T> operator+(int value)
+    {
+        Iterator<T> save = * this;
+        if (!(reverse_flag))
+        	return save + value;
+        else
+        	return save - value;
+    }
+
+    Iterator<T> operator-(int value)
+    {
+        Iterator<T> save = * this;
+        if (!(reverse_flag))
+        	return save - value;
+        else
+        	return save + value;
+    }
 
     bool operator==(const Iterator<T>& second_vec) const
     {
@@ -157,42 +193,6 @@ public:
         return (!(*this == second_vec));
     }
 
-    Iterator<T>& operator+=(int value)
-    {
-    	if (!(reverse_flag))
-        	my_pointer += value;
-        else
-        	my_pointer -= value;
-        return *this;
-    }
-
-    Iterator<T>& operator-=(int value)
-    {
-        if (!(reverse_flag))
-        	my_pointer -= value;
-        else
-        	my_pointer += value;
-        return *this;
-    }
-
-    Iterator<T> operator+(int value)
-    {
-        Iterator<T> save = * this;
-        if (!(reverse_flag))
-        	return save + value;
-        else
-        	return save - value;
-    }
-
-    Iterator<T> operator-(int value)
-    {
-        Iterator<T> save = * this;
-        if (!(reverse_flag))
-        	return save - value;
-        else
-        	return save + value;
-    }
-
 };
 
 template <class T, class Allocator = Allocator<T>>
@@ -232,6 +232,19 @@ public:
         }
     }
 
+	Vector &operator=(const Vector& second_vector)
+    {
+        this->~Vector();
+        max_size = second_vector.capacity();
+        my_pointer = alloc.allocate(max_size);
+        vec_size = second_vector.size();
+        for (size_t i = 0; i < vec_size; i++)
+        {
+            my_pointer[i] = second_vector[i];
+        }
+        return *this;
+    }
+
     Vector &operator=(Vector&& second_vector)
     {
         this->~Vector();
@@ -243,19 +256,6 @@ public:
             my_pointer[i] = move(second_vector[i]);
         }
         second_vector.clear();
-        return * this;
-    }
-
-    Vector &operator=(const Vector& second_vector)
-    {
-        this->~Vector();
-        max_size = second_vector.capacity();
-        my_pointer = alloc.allocate(max_size);
-        vec_size = second_vector.size();
-        for (size_t i = 0; i < vec_size; i++)
-        {
-            my_pointer[i] = second_vector[i];
-        }
         return *this;
     }
 
