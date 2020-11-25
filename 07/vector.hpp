@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <limits>
 using namespace std;
 
 template <class T>
@@ -17,9 +18,22 @@ public:
         delete[] pointer;
     }
 
-    void del(T* pointer) 
+    void destroy(T* pointer) 
     {
         pointer->~T();
+    }
+
+    void construct(T* pointer, size_t n) 
+    {
+        for (size_t i = 0; i < n; i++) 
+        {
+            new (pointer + i) T();
+        }
+    }
+
+    size_t max_size() const noexcept 
+    {
+        return numeric_limits<size_t>::max();
     }
 };
 
@@ -46,47 +60,47 @@ public:
         return *my_pointer;
     }
 
-    T& operator[](const size_t i)
+    T& operator[](const size_t n)
     {
     	if (reverse_flag)
-        	return my_pointer[syzeof(my_pointer) - i - 1];
+        	return my_pointer[syzeof(my_pointer) - n - 1];
         else
-        	return my_pointer[i];
+        	return my_pointer[n];
     }
 
-    const T& operator[](const size_t i) const
+    const T& operator[](const size_t n) const
     {
         if (reverse_flag)
-        	return my_pointer[syzeof(my_pointer) - i - 1];
+        	return my_pointer[syzeof(my_pointer) - n - 1];
         else
-        	return my_pointer[i];
+        	return my_pointer[n];
     }
 
     Iterator<T>& operator++()
     {
     	if (reverse_flag)
-        	--my_pointer;
+        	my_pointer++;
         else
-        	++my_pointer;
-        return * this;
+        	my_pointer--;
+        return *this;
     }
 
     Iterator<T>& operator--()
     {
         if (reverse_flag)
-        	++my_pointer;
+        	my_pointer++;
         else
-        	--my_pointer;
-        return * this;
+        	my_pointer--;
+        return *this;
     }
 
     Iterator<T> operator++(int)
     {
     	Iterator<T> tmp = *this;
     	if (reverse_flag)
-    		--my_pointer;
+    		my_pointer--;
     	else
-    		++my_pointer;
+    		my_pointer++;
         return tmp;
     }
 
@@ -94,9 +108,9 @@ public:
     {
     	Iterator<T> tmp = *this;
     	if (reverse_flag)
-    		++my_pointer;
+    		my_pointer++;
     	else
-    		--my_pointer;
+    		my_pointer--;
         return tmp;
     }
 
@@ -149,7 +163,7 @@ public:
         	my_pointer += value;
         else
         	my_pointer -= value;
-        return * this;
+        return *this;
     }
 
     Iterator<T>& operator-=(int value)
@@ -158,7 +172,7 @@ public:
         	my_pointer -= value;
         else
         	my_pointer += value;
-        return * this;
+        return *this;
     }
 
     Iterator<T> operator+(int value)
@@ -180,9 +194,6 @@ public:
     }
 
 };
-
-
-
 
 template <class T, class Allocator = Allocator<T>>
 class Vector
@@ -221,14 +232,31 @@ public:
         }
     }
 
-    ~Vector()
+    Vector &operator=(Vector&& second_vector)
     {
-        vec_size = 0;
-        max_size = 0;
-        if (my_pointer != nullptr)
+        this->~Vector();
+        max_size = second_vector.capacity();
+        my_pointer = alloc.allocate(max_size);
+        vec_size = second_vector.size();
+        for (size_t i = 0; i < vec_size; i++)
         {
-            alloc.deallocate(my_pointer);
+            my_pointer[i] = move(second_vector[i]);
         }
+        second_vector.clear();
+        return * this;
+    }
+
+    Vector &operator=(const Vector& second_vector)
+    {
+        this->~Vector();
+        max_size = second_vector.capacity();
+        my_pointer = alloc.allocate(max_size);
+        vec_size = second_vector.size();
+        for (size_t i = 0; i < vec_size; i++)
+        {
+            my_pointer[i] = second_vector[i];
+        }
+        return *this;
     }
 
     Iterator<T> begin()
@@ -251,43 +279,43 @@ public:
         return Iterator<T>(my_pointer, true);
     }
 
-    T& operator[](size_t i)
+    T& operator[](size_t n)
     {
-        if (i > vec_size || i < 0)
+        if ( (n < 0) || (n > vec_size) )
         {
             throw runtime_error("index out of range");
         }
-        return my_pointer[i];
+        return my_pointer[n];
     }
 
-    const T& operator[](size_t i) const
+    const T& operator[](size_t n) const
     {
-        if (i > vec_size || i < 0)
+        if ( (n < 0) || (n > vec_size) )
         {
             throw runtime_error("index out of range");
         }
-        return my_pointer[i];
+        return my_pointer[n];
     }
 
-    void push_back(const T& new_value)
+    void push_back(const T& elem)
     {
-        if (vec_size >= max_size)
+        if (vec_size + 2 >= max_size) // делаем увеличение места заранее
         {
             max_size = max_size * 2 + 1;
             reallocate();
         }
-        my_pointer[vec_size] = new_value;
+        my_pointer[vec_size] = elem;
         vec_size++;;
     }
 
-    void push_back(T && new_value)
+    void push_back(T&& elem)
     {
-        if (vec_size >= max_size)
+        if (vec_size + 2 >= max_size) // делаем увеличение места заранее
         {
             max_size = max_size * 2 + 1;
             reallocate();
         }
-        my_pointer[vec_size] = move(new_value);
+        my_pointer[vec_size] = move(elem);
         vec_size++;
     }
 
@@ -296,7 +324,7 @@ public:
         T* new_pointer = alloc.allocate(max_size);
         for (size_t i = 0; i < vec_size; i++)
         {
-            new_pointer[i] = my_pointer[i];
+            new_pointer[i] = move(my_pointer[i]);
         }
         alloc.deallocate(my_pointer);
         my_pointer = new_pointer;
@@ -304,12 +332,12 @@ public:
 
     void pop_back()
     {
-        if (vec_size <= 0)
+        if (vec_size == 0)
         {
-            throw runtime_error("negative size");
+            throw runtime_error("empty vector");
         }
         vec_size--;
-        alloc.del(my_pointer + vec_size);
+        alloc.destroy(my_pointer + vec_size);
     }
 
     template <class... Args>
@@ -320,16 +348,16 @@ public:
 
     void clear()
     {
-        deleter(0);
+        deleter();
         vec_size = 0;
         max_size = 0;
     }
 
-    void deleter(size_t offset)
+    void deleter(size_t offset=0)
     {
         for (T* tmp = my_pointer + offset; tmp < my_pointer + vec_size; tmp++)
         {
-            alloc.del(tmp);
+            alloc.destroy(tmp);
         }
     }
 
@@ -347,7 +375,6 @@ public:
                 max_size = new_size * 2 + 1;
                 reallocate();
             }
-            vec_size = new_size;
         }
     }
 
@@ -358,7 +385,6 @@ public:
             max_size = new_size;
             reallocate();
         }
-        vec_size = new_size;
     }
 
     size_t capacity() const
@@ -374,6 +400,16 @@ public:
     size_t size() const
     {
         return vec_size;
+    }
+
+	~Vector()
+    {
+        vec_size = 0;
+        max_size = 0;
+        if (my_pointer != nullptr)
+        {
+            alloc.deallocate(my_pointer);
+        }
     }
 
 };
