@@ -100,6 +100,12 @@ public:
         return tmp;
     }
 
+
+    bool operator==(const Iterator<T>& second_vec) const
+    {
+        return my_pointer == second_vec.my_pointer;
+    }
+
     bool operator>(const Iterator<T>& second_vec) const
     {
     	if (!(reverse_flag))
@@ -108,9 +114,12 @@ public:
         	return my_pointer < second_vec.my_pointer;
     }
 
-    bool operator==(const Iterator<T>& second_vec) const
+    bool operator<(const Iterator<T>& second_vec) const
     {
-        return my_pointer == second_vec.my_pointer;
+        if (!(reverse_flag))
+        	return !(*this >= second_vec);
+        else
+        	return !(*this <= second_vec);
     }
 
     bool operator>=(const Iterator<T>& second_vec) const
@@ -119,14 +128,6 @@ public:
         	return my_pointer >= second_vec.my_pointer;
         else
         	return my_pointer <= second_vec.my_pointer;
-    }
-
-    bool operator<(const Iterator<T>& second_vec) const
-    {
-        if (!(reverse_flag))
-        	return !(*this >= second_vec);
-        else
-        	return !(*this <= second_vec);
     }
 
     bool operator<=(const Iterator<T>& second_vec) const
