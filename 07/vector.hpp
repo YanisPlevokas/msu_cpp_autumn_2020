@@ -231,33 +231,6 @@ public:
         }
     }
 
-	Vector &operator=(const Vector& second_vector)
-    {
-        this->~Vector();
-        max_size = second_vector.capacity();
-        my_pointer = alloc.allocate(max_size);
-        vec_size = second_vector.size();
-        for (size_t i = 0; i < vec_size; i++)
-        {
-            my_pointer[i] = second_vector[i];
-        }
-        return *this;
-    }
-
-    Vector &operator=(Vector&& second_vector)
-    {
-        this->~Vector();
-        max_size = second_vector.capacity();
-        my_pointer = alloc.allocate(max_size);
-        vec_size = second_vector.size();
-        for (size_t i = 0; i < vec_size; i++)
-        {
-            my_pointer[i] = move(second_vector[i]);
-        }
-        second_vector.clear();
-        return *this;
-    }
-
     Iterator<T> begin()
     {
         return Iterator<T>(my_pointer, false);
