@@ -86,6 +86,7 @@ void test_5() //emplace_check
     assert(v[0].second == false);
 }
 
+
 int main()
 {
 	try
