@@ -222,13 +222,41 @@ public:
         }
     }
 
+    Vector& operator=(const Vector& second_vector)
+    {
+    	alloc.deallocate(my_pointer);
+    	max_size = second_vector.size();
+    	vec_size = second_vector.capacity();
+    	my_pointer = alloc.allocate(max_size);
+    	for (size_t i = 0; i < vec_size; i++)
+    	{
+    		my_pointer[i] = second_vector[i];
+    	}
+    	return *this;
+    }
+
+    Vector& operator=(Vector&& second_vector)
+    {
+    	alloc.deallocate(my_pointer);
+    	max_size = second_vector.size();
+    	vec_size = second_vector.capacity();
+    	my_pointer = alloc.allocate(max_size);
+    	for (size_t i = 0; i < vec_size; i++)
+    	{
+    		my_pointer[i] = move(second_vector[i]);
+    	}
+    	second_vector.vec_size = 0;
+    	second_vector.max_size = 0;
+    	return *this;
+    }
+
+
     Vector(Vector&& second_vector): max_size(second_vector.max_size), vec_size(second_vector.vec_size), alloc()
     {
-        my_pointer = alloc.allocate(max_size);
-        for (size_t i = 0; i < vec_size; i++)
-        {
-            my_pointer[i] = move(second_vector[i]);
-        }
+    	my_pointer = second_vector.my_pointer;
+        second_vector.my_pointer = nullptr; // делал clear, но повторно освобождается память
+        second_vector.max_size = 0;
+    	second_vector.vec_size = 0;
     }
 
     Iterator<T> begin()
